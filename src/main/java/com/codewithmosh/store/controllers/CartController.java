@@ -34,7 +34,6 @@ import lombok.AllArgsConstructor;
 public class CartController {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
-    private final ProductRepository productRepository;
     private CartService cartService;
 
     
