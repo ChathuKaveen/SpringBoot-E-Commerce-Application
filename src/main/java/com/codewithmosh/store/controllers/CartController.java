@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,6 +102,29 @@ public class CartController {
         cartItems.setQuantity(request.getQuantity());
         cartRepository.save(cart);
         return ResponseEntity.ok(cartMapper.toDto(cartItems));
+    
+    
+    }
+    @DeleteMapping("/{cartId}/items/{productId}")
+    public ResponseEntity<?> deleteItem(@PathVariable(name = "cartId") UUID cartId , @PathVariable(name = "productId") Long productId){
+        var cart = cartRepository.findById(cartId).orElse(null);
+        if(cart == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                Map.of("error", "Cart Not Found")
+            );
+        }
+        var cartItems = cart.getCartItems().stream().filter(item ->item.getProduct().getId().equals(productId))
+        .findFirst()
+        .orElse(null);
+        if(cartItems != null){
+            cart.getCartItems().remove(cartItems);
+            cartRepository.save(cart);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                Map.of("error", "Cart Item Not Found")
+            );
+        
     }
     
     

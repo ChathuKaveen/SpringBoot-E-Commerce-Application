@@ -31,7 +31,7 @@ public class Cart {
     @Column(name = "date_created" , insertable = false , updatable = false)
     private LocalDate date;
 
-    @OneToMany(mappedBy = "cart" , cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "cart" , cascade = CascadeType.MERGE ,  orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
 
     public BigDecimal getTotalPrice(){
