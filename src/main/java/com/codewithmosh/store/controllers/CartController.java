@@ -23,6 +23,7 @@ import com.codewithmosh.store.entities.Cart;
 import com.codewithmosh.store.entities.CartItem;
 import com.codewithmosh.store.repositories.CartRepository;
 import com.codewithmosh.store.repositories.ProductRepository;
+import com.codewithmosh.store.services.CartService;
 
 import lombok.AllArgsConstructor;
 
@@ -34,41 +35,18 @@ public class CartController {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
     private final ProductRepository productRepository;
+    private CartService cartService;
+
+    
     @PostMapping
     public ResponseEntity<CartDto> createCart(){
-        var cart  = new Cart();
-        cartRepository.save(cart);
-
-        var cartDto = cartMapper.toDto(cart);
+        var cartDto = cartService.createCart();
         return new ResponseEntity<>(cartDto , HttpStatus.CREATED);
     }
 
     @PostMapping("/{cartId}/item")
     public ResponseEntity<CartItemsDto> addToCart(@PathVariable UUID cartId ,@RequestBody AddToCartRequest request){
-        var cart  = cartRepository.findById(cartId).orElse(null);
-        if(cart == null){
-            return ResponseEntity.notFound().build();
-        }
-
-        var product = productRepository.findById(request.getProductId()).orElse(null);
-        if(product == null){
-            return ResponseEntity.badRequest().build();
-        }
-
-        var cartItems = cart.getCartItems().stream().filter(item ->item.getProduct().getId().equals(product.getId()))
-                        .findFirst()
-                        .orElse(null);
-        if(cartItems != null){
-            cartItems.setQuantity(cartItems.getQuantity()+1);
-        }else{
-            cartItems = new CartItem();
-            cartItems.setProduct(product);
-            cartItems.setQuantity(1);
-            cartItems.setCart(cart);
-            cart.getCartItems().add(cartItems);
-        }
-        cartRepository.save(cart);
-        var cartItemDto = cartMapper.toDto(cartItems);
+        var cartItemDto = cartService.addToCart(cartId, request.getProductId());
         return ResponseEntity.status(HttpStatus.CREATED).body(cartItemDto);
     }
 
