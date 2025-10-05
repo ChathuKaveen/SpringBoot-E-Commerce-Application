@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +20,9 @@ import com.codewithmosh.store.Dtos.CartDto;
 import com.codewithmosh.store.Dtos.CartItemsDto;
 import com.codewithmosh.store.Dtos.UpdateCartItemRequest;
 import com.codewithmosh.store.Mappers.CartMapper;
-import com.codewithmosh.store.entities.Cart;
-import com.codewithmosh.store.entities.CartItem;
+import com.codewithmosh.store.exceptions.CartNotFoundException;
+import com.codewithmosh.store.exceptions.ProductNotFoundException;
 import com.codewithmosh.store.repositories.CartRepository;
-import com.codewithmosh.store.repositories.ProductRepository;
 import com.codewithmosh.store.services.CartService;
 
 import lombok.AllArgsConstructor;
@@ -51,57 +51,30 @@ public class CartController {
 
     @GetMapping("/{cartId}")
     public ResponseEntity<CartDto> getCart(@PathVariable UUID cartId){
-        var cart = cartRepository.findById(cartId).orElse(null);
-        if(cart == null){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(cartMapper.toDto(cart));
+        return ResponseEntity.ok(cartService.getCart(cartId));
     }
 
 
     @PutMapping("/{cartId}/items/{productId}")
     public ResponseEntity<?> updateItem(@PathVariable(name = "cartId") UUID cartId , @PathVariable(name = "productId") Long productId , @RequestBody UpdateCartItemRequest request){
-        var cart = cartRepository.findById(cartId).orElse(null);
-        if(cart == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                Map.of("error", "Cart Not Found")
-            );
-        }
-        var cartItems = cart.getCartItems().stream().filter(item ->item.getProduct().getId().equals(productId))
-        .findFirst()
-        .orElse(null);
-        if(cartItems == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                Map.of("error", "Cart Item Not Found")
-            );
-        }
-        cartItems.setQuantity(request.getQuantity());
-        cartRepository.save(cart);
-        return ResponseEntity.ok(cartMapper.toDto(cartItems));
-    
-    
+        return ResponseEntity.ok(cartService.updateCart(cartId, productId, request.getQuantity()));
     }
+
+    
     @DeleteMapping("/{cartId}/items/{productId}")
     public ResponseEntity<?> deleteItem(@PathVariable(name = "cartId") UUID cartId , @PathVariable(name = "productId") Long productId){
-        var cart = cartRepository.findById(cartId).orElse(null);
-        if(cart == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                Map.of("error", "Cart Not Found")
-            );
-        }
-        var cartItems = cart.getCartItems().stream().filter(item ->item.getProduct().getId().equals(productId))
-        .findFirst()
-        .orElse(null);
-        if(cartItems != null){
-            cart.getCartItems().remove(cartItems);
-            cartRepository.save(cart);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                Map.of("error", "Cart Item Not Found")
-            );
-        
+        cartService.clearCart(cartId, productId);
+        return ResponseEntity.noContent().build();    
+    }
+
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleCartNotFound(){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Cart Not Found"));
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleProductNotFound(){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Product Not Found"));
     }
     
     

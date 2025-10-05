@@ -1,10 +1,17 @@
 package com.codewithmosh.store.services;
 
+import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.codewithmosh.store.Dtos.CartDto;
 import com.codewithmosh.store.Dtos.CartItemsDto;
+import com.codewithmosh.store.Dtos.UpdateCartItemRequest;
 import com.codewithmosh.store.Mappers.CartMapper;
 import com.codewithmosh.store.entities.Cart;
 import com.codewithmosh.store.entities.CartItem;
@@ -51,5 +58,47 @@ public class CartService {
         }
         cartRepository.save(cart);
         return cartMapper.toDto(cartItems);
+    }
+
+    public CartDto getCart(UUID cartId){
+        var cart = cartRepository.findById(cartId).orElse(null);
+        if(cart == null){
+           throw new CartNotFoundException();
+        }
+
+        return cartMapper.toDto(cart);
+    }
+
+    public CartItemsDto updateCart(UUID cartId ,Long productId , int quantity){
+        var cart = cartRepository.findById(cartId).orElse(null);
+        if(cart == null){
+            throw new CartNotFoundException();
+        }
+        var cartItems = cart.getCartItems().stream().filter(item ->item.getProduct().getId().equals(productId))
+        .findFirst()
+        .orElse(null);
+        if(cartItems == null){
+            throw new ProductNotFoundException();
+        }
+        cartItems.setQuantity(quantity);
+        cartRepository.save(cart);
+        return cartMapper.toDto(cartItems);
+    }
+
+    public void clearCart(UUID cartId ,Long productId){
+        var cart = cartRepository.findById(cartId).orElse(null);
+        if(cart == null){
+           throw new CartNotFoundException();
+        }
+        var cartItems = cart.getCartItems().stream().filter(item ->item.getProduct().getId().equals(productId))
+        .findFirst()
+        .orElse(null);
+        if(cartItems == null){
+            throw new ProductNotFoundException();
+        }
+        cart.getCartItems().remove(cartItems);
+        cartRepository.save(cart);
+        
+        
     }
 }
