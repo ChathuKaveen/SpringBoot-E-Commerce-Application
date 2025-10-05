@@ -14,15 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.codewithmosh.store.Dtos.AddToCartRequest;
 import com.codewithmosh.store.Dtos.CartDto;
 import com.codewithmosh.store.Dtos.CartItemsDto;
 import com.codewithmosh.store.Dtos.UpdateCartItemRequest;
-import com.codewithmosh.store.Mappers.CartMapper;
 import com.codewithmosh.store.exceptions.CartNotFoundException;
 import com.codewithmosh.store.exceptions.ProductNotFoundException;
-import com.codewithmosh.store.repositories.CartRepository;
 import com.codewithmosh.store.services.CartService;
 
 import lombok.AllArgsConstructor;
@@ -32,11 +29,8 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/carts")
 public class CartController {
-    private final CartRepository cartRepository;
-    private final CartMapper cartMapper;
     private CartService cartService;
 
-    
     @PostMapping
     public ResponseEntity<CartDto> createCart(){
         var cartDto = cartService.createCart();

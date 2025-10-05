@@ -1,17 +1,8 @@
 package com.codewithmosh.store.services;
-
-import java.util.Map;
 import java.util.UUID;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.codewithmosh.store.Dtos.CartDto;
 import com.codewithmosh.store.Dtos.CartItemsDto;
-import com.codewithmosh.store.Dtos.UpdateCartItemRequest;
 import com.codewithmosh.store.Mappers.CartMapper;
 import com.codewithmosh.store.entities.Cart;
 import com.codewithmosh.store.entities.CartItem;
@@ -20,11 +11,15 @@ import com.codewithmosh.store.exceptions.ProductNotFoundException;
 import com.codewithmosh.store.repositories.CartRepository;
 import com.codewithmosh.store.repositories.ProductRepository;
 
+import lombok.AllArgsConstructor;
+
+
 @Service
+@AllArgsConstructor
 public class CartService {
-    private CartMapper cartMapper;
-    private CartRepository cartRepository;
-    private ProductRepository productRepository;
+    private final CartMapper cartMapper;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
         
     public CartDto createCart(){
         var cart  = new Cart();
