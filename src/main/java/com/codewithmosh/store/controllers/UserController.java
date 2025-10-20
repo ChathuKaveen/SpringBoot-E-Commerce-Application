@@ -27,6 +27,7 @@ import com.codewithmosh.store.Dtos.UpdateUserPassword;
 import com.codewithmosh.store.Dtos.UpdateUserRequest;
 import com.codewithmosh.store.Dtos.UserDto;
 import com.codewithmosh.store.Mappers.UserMappper;
+import com.codewithmosh.store.entities.Role;
 
 
 @RestController
@@ -68,6 +69,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("email" , "Already Taken"));
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         var userDto = userMappper.toDto(user);

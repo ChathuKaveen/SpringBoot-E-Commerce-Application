@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.codewithmosh.store.filters.JWTAuthenticationFilter;
 
 import lombok.AllArgsConstructor;
 
@@ -22,6 +25,7 @@ import lombok.AllArgsConstructor;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailService;
+    private final JWTAuthenticationFilter jwtAuthenticationFilter;
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -49,8 +53,10 @@ public class SecurityConfig {
                 .requestMatchers("/carts/**").permitAll()
                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                 .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
-                .anyRequest().authenticated());
+                .requestMatchers(HttpMethod.POST,"/auth/validate").permitAll()
+                .anyRequest().authenticated()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                
         return http.build();
-
     }
+    
 }

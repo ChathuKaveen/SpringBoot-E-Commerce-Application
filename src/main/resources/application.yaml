@@ -19,3 +19,6 @@ logging:
 
 jwt:
   secret: ${JWT_SECERET}
+  accessTokenExpiration: 300
+  refreshTokenExpiration: 604800
+
