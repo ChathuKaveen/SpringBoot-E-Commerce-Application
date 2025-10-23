@@ -11,5 +11,5 @@ import lombok.Data;
 public class JwtConfig {
     private String secret;
     private int accessTokenExp;
-    private int refreshTokenExp;
+    private int refreshTokenExpiration;
 }

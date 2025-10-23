@@ -1,12 +1,9 @@
 package com.codewithmosh.store.controllers;
 import com.codewithmosh.store.repositories.UserRepository;
-
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
 import java.util.Map;
 import java.util.Set;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import com.codewithmosh.store.Dtos.RegisterUserRequest;
 import com.codewithmosh.store.Dtos.UpdateUserPassword;
 import com.codewithmosh.store.Dtos.UpdateUserRequest;

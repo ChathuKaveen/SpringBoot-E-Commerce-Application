@@ -1,10 +1,11 @@
 package com.codewithmosh.store.filters;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,13 +32,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
         }    
 
         var token = authHeader.replace("Bearer ", "");
-        if(!jwtService.validateToken(token)){
+        var jwt = jwtService.parseToken(token);
+        if(jwt == null || !jwt.validateToken()){
             filterChain.doFilter(request, response);
             return;
         }
 
         var authentication = new UsernamePasswordAuthenticationToken(
-            jwtService.getIdFromToken(token), null , null
+            jwt.validateToken(), null , List.of(new SimpleGrantedAuthority("ROLE_" + jwt.getRoleFromToken()))
         );
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

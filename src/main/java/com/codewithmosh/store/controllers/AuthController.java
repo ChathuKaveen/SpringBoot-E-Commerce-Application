@@ -8,11 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.codewithmosh.store.Dtos.JwtResponseDto;
@@ -60,10 +60,23 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(new JwtResponseDto(token));
     }
 
-    @PostMapping("/validate")
-    public boolean validate(@RequestHeader("Authorization") String authHeader){
-        var token = authHeader.replace("Bearer ", "");
-        return jwtService.validateToken(token);
+    //No longer needed
+    // @PostMapping("/validate")
+    // public boolean validate(@RequestHeader("Authorization") String authHeader){
+    //     var token = authHeader.replace("Bearer ", "");
+    //     return jwtService.validateToken(token);
+    // }
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponseDto> refresh(@CookieValue(value = "refreshToken") String refreshToken){
+        var token = jwtService.parseToken(refreshToken);
+        if(!token.validateToken()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        var userId =  token.getIdFromToken();
+        var user = userRepository.findById(userId).orElseThrow();
+        var userToken = jwtService.generateToken(user);
+
+        return ResponseEntity.ok(new JwtResponseDto(userToken));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
