@@ -32,7 +32,7 @@ public class Order_items {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "unit")
+    @Column(name = "unit_price")
     private BigDecimal unitPrice;
 
     @Column(name = "quantity")

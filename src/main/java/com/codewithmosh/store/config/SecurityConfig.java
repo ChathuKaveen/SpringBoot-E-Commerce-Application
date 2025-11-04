@@ -53,11 +53,11 @@ public class SecurityConfig {
             .sessionManagement(c->c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .csrf(c->c.disable())
             .authorizeHttpRequests(c->c
-                .requestMatchers("/carts/**").permitAll()
                 .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                 .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST,"/auth/refresh").permitAll()
+                .requestMatchers("/carts/**").permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c->{

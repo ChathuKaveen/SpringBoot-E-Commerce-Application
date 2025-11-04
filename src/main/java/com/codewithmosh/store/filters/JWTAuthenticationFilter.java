@@ -39,7 +39,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
         }
 
         var authentication = new UsernamePasswordAuthenticationToken(
-            jwt.validateToken(), null , List.of(new SimpleGrantedAuthority("ROLE_" + jwt.getRoleFromToken()))
+            jwt.getIdFromToken(), null , List.of(new SimpleGrantedAuthority("ROLE_" + jwt.getRoleFromToken()))
         );
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
