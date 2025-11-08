@@ -23,3 +23,6 @@ jwt:
   refreshTokenExpiration: 604800
 
 logging.level.org.springframework.security: DEBUG
+
+stripe:
+  stripeKey: ${STRIPE_KEY}
