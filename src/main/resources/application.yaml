@@ -26,3 +26,4 @@ logging.level.org.springframework.security: DEBUG
 
 stripe:
   stripeKey: ${STRIPE_KEY}
+  webhookSeceret: ${STRIPE_WEBHOOK_SECERET_KEY}
