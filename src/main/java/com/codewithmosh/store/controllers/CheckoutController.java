@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codewithmosh.store.Dtos.CheckoutRequest;
 import com.codewithmosh.store.Dtos.CheckoutResponse;
 import com.codewithmosh.store.exceptions.PaymentException;
-import com.codewithmosh.store.repositories.OrderRepository;
 import com.codewithmosh.store.services.CheckoutService;
 import com.codewithmosh.store.services.WebhookRequest;
 import com.stripe.exception.StripeException;
@@ -27,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class CheckoutController {
    
     private final CheckoutService checkoutService;
-    private final OrderRepository orderRepository;
    
 
     @PostMapping

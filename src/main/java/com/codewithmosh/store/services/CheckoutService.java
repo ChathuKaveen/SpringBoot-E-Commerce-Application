@@ -1,8 +1,5 @@
 package com.codewithmosh.store.services;
 
-import java.util.Map;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.codewithmosh.store.Dtos.CheckoutRequest;
@@ -15,10 +12,6 @@ import com.codewithmosh.store.exceptions.CartNotFoundException;
 import com.codewithmosh.store.exceptions.PaymentException;
 import com.codewithmosh.store.repositories.CartRepository;
 import com.codewithmosh.store.repositories.OrderRepository;
-import com.stripe.exception.SignatureVerificationException;
-import com.stripe.model.PaymentIntent;
-import com.stripe.net.Webhook;
-
 import lombok.AllArgsConstructor;
 
 @Service
